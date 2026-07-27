@@ -1001,7 +1001,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: "coolers-006",
-    name: { en: "Shikanjvi", hi: "शिकंजवी", te: "శికంజవి" },
+    name: { en: "Shikanji", hi: "शिकंजी", te: "శికంజీ" },
     description: {
       en: "A bracing summer drink – fresh lime, black salt, roasted cumin, and sugar water, shaken with ice. Centuries-old and forever refreshing.",
     },
