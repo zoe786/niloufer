@@ -11,6 +11,7 @@ import MenuItemCard from "@/components/MenuItemCard";
 import ResetButton from "@/components/ResetButton";
 import SecretMenuModal from "@/components/SecretMenuModal";
 import SuggestionPanel from "@/components/SuggestionPanel";
+import VoiceAssistantPanel from "@/components/VoiceAssistantPanel";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import { useCart } from "@/context/CartContext";
 import { menuItems, secretMenuItem } from "@/data/menu";
@@ -39,7 +40,7 @@ export default function KioskPage() {
   const [secretOpen, setSecretOpen] = useState(false);
   const logoTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { addItem, clearCart } = useCart();
+  const { addItem, clearCart, removeItem, items: cartItems } = useCart();
 
   function handleLogoClick() {
     if (logoTapTimer.current) clearTimeout(logoTapTimer.current);
@@ -107,6 +108,36 @@ export default function KioskPage() {
     setFilters({ dietary: [], moods: [], budgetFriendly: false });
     setLogoTapCount(0);
   }
+
+  // ── Voice assistant handlers ────────────────────────────────────────────────
+
+  const handleVoiceAddItem = useCallback(
+    (item: MenuItem, qty: number) => {
+      addItem(item, qty, []);
+      const name = (language !== "en" && item.name[language]) || item.name.en;
+      pushToast(`${qty > 1 ? `${qty} × ` : ""}${name} added via voice 🎤`);
+    },
+    [addItem, language, pushToast]
+  );
+
+  const handleVoiceRemoveByName = useCallback(
+    (name: string) => {
+      const lower = name.toLowerCase();
+      const cartItem = cartItems.find((ci) =>
+        ci.menuItem.name.en.toLowerCase().includes(lower)
+      );
+      if (cartItem) {
+        removeItem(cartItem.cartItemId);
+        pushToast(`${cartItem.menuItem.name.en} removed ✓`);
+      }
+    },
+    [cartItems, removeItem, pushToast]
+  );
+
+  const handleVoiceCheckout = useCallback(() => {
+    setCartOpen(false);
+    setCheckoutOpen(true);
+  }, []);
 
   function handleSecretAdd(item: typeof secretMenuItem) {
     addItem(item, 1, []);
@@ -256,6 +287,13 @@ export default function KioskPage() {
 
           <ResetButton onReset={handleReset} />
           <FeedbackToast toasts={toasts} onDismiss={dismissToast} />
+          <VoiceAssistantPanel
+            language={language}
+            onAddItem={handleVoiceAddItem}
+            onRemoveItemByName={handleVoiceRemoveByName}
+            onCheckout={handleVoiceCheckout}
+            onClearCart={clearCart}
+          />
         </>
       )}
     </div>
