@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Cafe Niloufer brand tokens ──────────────────────────────────────── */
+:root {
+  --background: #FDF6EC;  /* niloufer-cream */
+  --foreground: #2D2017;  /* niloufer-charcoal */
+
+  /* Prevent portrait/landscape flicker on kiosk */
+  color-scheme: light;
+}
+
+/* Override dark mode preference – kiosk always uses light/warm theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #FDF6EC;
+    --foreground: #2D2017;
+  }
+}
+
+/* ── Base body styles ────────────────────────────────────────────────── */
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: system-ui, -apple-system, sans-serif;
+  /* Smooth momentum scrolling on iOS kiosk WebView */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent accidental text selection on touch */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Allow selection inside inputs */
+input, textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* ── Utility: hide scrollbar but keep scroll ─────────────────────────── */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Kiosk orientation hint (JS/manifest should enforce this) */
+  .kiosk-portrait {
+    max-width: 1080px;
+    min-height: 100dvh;
+  }
+}
