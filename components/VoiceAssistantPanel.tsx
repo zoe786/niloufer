@@ -1,0 +1,468 @@
+"use client";
+
+/**
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Cafe Niloufer – Voice Assistant Panel
+ *
+ * Provides seamless voice ordering experience with:
+ *  - Tap-to-talk or press-to-speak interaction
+ *  - Live listening state / status indicator
+ *  - Transcript display
+ *  - Assistant responses in warm Niloufer tone
+ *  - Add-to-cart / remove / checkout actions driven by parsed assistant results
+ *  - Text input fallback if browser speech APIs are unavailable
+ *  - Gentle "local assistant" notice when DeepSeek is not reachable
+ *
+ * Architecture:
+ *  - Speech-to-text: Web Speech API (SpeechRecognition) where available
+ *  - Parsing/reasoning: POST /api/assistant (DeepSeek-backed, falls back locally)
+ *  - Text-to-speech: Web Speech API (SpeechSynthesis) where available
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+import { menuItems } from "@/data/menu";
+import type { AssistantResponse, Language, MenuItem } from "@/types";
+import { AnimatePresence, motion } from "framer-motion";
+import { Mic, MicOff, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface VoiceAssistantPanelProps {
+  language: Language;
+  onAddItem: (item: MenuItem, qty: number) => void;
+  onRemoveItemByName: (name: string) => void;
+  onCheckout: () => void;
+  onClearCart: () => void;
+}
+
+type PanelStatus =
+  | "idle"
+  | "listening"
+  | "processing"
+  | "speaking"
+  | "error";
+
+// ─── Browser speech helpers ───────────────────────────────────────────────────
+
+// SpeechRecognition isn't always in TypeScript's dom lib – declare a minimal interface
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  0: { transcript: string };
+}
+
+interface SpeechRecognitionEvent {
+  resultIndex: number;
+  results: SpeechRecognitionResult[];
+}
+
+interface SpeechRecognitionLike {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+function getSpeechRecognition(): SpeechRecognitionConstructor | null {
+  if (typeof window === "undefined") return null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const w = window as any;
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
+}
+
+function speak(text: string): void {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-IN";
+  utterance.rate = 0.95;
+  utterance.pitch = 1.05;
+  window.speechSynthesis.speak(utterance);
+}
+
+// ─── Status label map ─────────────────────────────────────────────────────────
+
+const STATUS_LABELS: Record<PanelStatus, string> = {
+  idle: "Tap the mic to order by voice",
+  listening: "Listening…",
+  processing: "Just a moment…",
+  speaking: "Assistant is speaking",
+  error: "Something went wrong",
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export default function VoiceAssistantPanel({
+  language,
+  onAddItem,
+  onRemoveItemByName,
+  onCheckout,
+  onClearCart,
+}: VoiceAssistantPanelProps) {
+  const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState<PanelStatus>("idle");
+  const [transcript, setTranscript] = useState("");
+  const [inputText, setInputText] = useState("");
+  const [lastReply, setLastReply] = useState("");
+  const [fallbackUsed, setFallbackUsed] = useState(false);
+  const [speechAvailable, setSpeechAvailable] = useState(false);
+
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+
+  useEffect(() => {
+    setSpeechAvailable(getSpeechRecognition() !== null);
+  }, []);
+
+  // ── Stop recognition on panel close ──────────────────────────────────────
+  useEffect(() => {
+    if (!open && recognitionRef.current) {
+      recognitionRef.current.abort();
+      recognitionRef.current = null;
+      setStatus("idle");
+    }
+  }, [open]);
+
+  // ── Process assistant response ────────────────────────────────────────────
+
+  const processResponse = useCallback(
+    (res: AssistantResponse) => {
+      setLastReply(res.reply);
+      setFallbackUsed(res.fallbackUsed);
+      setStatus("speaking");
+      speak(res.reply);
+
+      switch (res.intent) {
+        case "add_item":
+          res.items.forEach((ai) => {
+            const found = menuItems.find((m) => m.id === ai.id);
+            if (found) onAddItem(found, ai.quantity ?? 1);
+          });
+          break;
+        case "remove_item":
+          res.items.forEach((ai) => onRemoveItemByName(ai.name));
+          break;
+        case "checkout":
+          setTimeout(onCheckout, 1200);
+          break;
+        case "clear_cart":
+          onClearCart();
+          break;
+        default:
+          break;
+      }
+
+      setTimeout(() => setStatus("idle"), 3000);
+    },
+    [onAddItem, onRemoveItemByName, onCheckout, onClearCart]
+  );
+
+  // ── Send transcript to API ────────────────────────────────────────────────
+
+  const sendTranscript = useCallback(
+    async (text: string) => {
+      if (!text.trim()) return;
+      setTranscript(text);
+      setStatus("processing");
+
+      try {
+        const res = await fetch("/api/assistant", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ transcript: text, language }),
+        });
+        if (!res.ok) throw new Error("API error " + res.status);
+        const data: AssistantResponse = await res.json();
+        processResponse(data);
+      } catch {
+        // Network completely unavailable – run client-side fallback
+        import("@/lib/assistant/fallbackParser").then(({ parseFallback }) => {
+          processResponse(parseFallback(text));
+        });
+      }
+    },
+    [language, processResponse]
+  );
+
+  // ── Mic press-to-speak ────────────────────────────────────────────────────
+
+  const startListening = useCallback(() => {
+    const SR = getSpeechRecognition();
+    if (!SR) return;
+
+    if (recognitionRef.current) {
+      recognitionRef.current.abort();
+    }
+
+    const recognition = new SR();
+    recognition.lang =
+      language === "hi" ? "hi-IN" : language === "te" ? "te-IN" : "en-IN";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognitionRef.current = recognition;
+
+    recognition.onstart = () => setStatus("listening");
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let interim = "";
+      let final = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const r = event.results[i];
+        if (r.isFinal) {
+          final += r[0].transcript;
+        } else {
+          interim += r[0].transcript;
+        }
+      }
+      setTranscript(final || interim);
+      if (final) {
+        recognition.stop();
+        sendTranscript(final);
+      }
+    };
+
+    recognition.onerror = () => {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 2000);
+    };
+
+    recognition.onend = () => {
+      if (status === "listening") setStatus("idle");
+    };
+
+    recognition.start();
+  }, [language, sendTranscript, status]);
+
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setStatus("idle");
+  }, []);
+
+  // ── Text input submit ─────────────────────────────────────────────────────
+
+  function handleTextSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!inputText.trim()) return;
+    sendTranscript(inputText.trim());
+    setInputText("");
+  }
+
+  // ── Mic button colours ────────────────────────────────────────────────────
+
+  const micActive = status === "listening";
+  const micBusy = status === "processing" || status === "speaking";
+
+  return (
+    <>
+      {/* ── Floating mic button ── */}
+      <motion.button
+        onClick={() => {
+          if (!open) {
+            setOpen(true);
+            setTimeout(() => {
+              if (speechAvailable) startListening();
+            }, 300);
+          } else if (micActive) {
+            stopListening();
+          } else if (!micBusy) {
+            startListening();
+          }
+        }}
+        aria-label={open ? "Voice assistant – tap to speak" : "Open voice assistant"}
+        title="Voice ordering assistant"
+        className={[
+          "fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full shadow-lg",
+          "flex items-center justify-center transition-all duration-200",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-niloufer-gold",
+          micActive
+            ? "bg-niloufer-burgundy scale-110 ring-4 ring-niloufer-burgundy/30"
+            : "bg-niloufer-burgundy hover:bg-niloufer-maroon active:scale-95",
+        ].join(" ")}
+        initial={false}
+        animate={micActive ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+        transition={micActive ? { repeat: Infinity, duration: 1.2 } : {}}
+      >
+        {micBusy ? (
+          <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        ) : micActive ? (
+          <Mic size={22} className="text-white" aria-hidden="true" />
+        ) : (
+          <Mic size={22} className="text-white/90" aria-hidden="true" />
+        )}
+      </motion.button>
+
+      {/* ── Assistant panel drawer ── */}
+      <AnimatePresence>
+        {open && (
+          <motion.aside
+            key="voice-panel"
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 28, stiffness: 300 }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-niloufer-cream border-t border-niloufer-gold/20 shadow-2xl rounded-t-2xl max-h-[70vh] flex flex-col"
+            role="dialog"
+            aria-label="Voice ordering assistant"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-niloufer-gold/15">
+              <div className="flex items-center gap-2">
+                <span
+                  className={[
+                    "w-2.5 h-2.5 rounded-full",
+                    status === "listening"
+                      ? "bg-red-500 animate-pulse"
+                      : status === "processing" || status === "speaking"
+                      ? "bg-niloufer-gold animate-pulse"
+                      : status === "error"
+                      ? "bg-orange-500"
+                      : "bg-niloufer-walnut/30",
+                  ].join(" ")}
+                  aria-hidden="true"
+                />
+                <h2 className="font-serif font-semibold text-niloufer-charcoal text-sm">
+                  Voice Assistant
+                </h2>
+                {fallbackUsed && (
+                  <span className="text-[10px] bg-niloufer-walnut/10 text-niloufer-walnut/70 rounded-full px-2 py-0.5 font-medium">
+                    local
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close voice assistant"
+                className="p-1.5 rounded-full hover:bg-niloufer-gold/15 text-niloufer-walnut/60 transition-colors"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 min-h-0">
+              {/* Status */}
+              <p className="text-xs text-niloufer-walnut/60 text-center">
+                {STATUS_LABELS[status]}
+              </p>
+
+              {/* Transcript */}
+              {transcript && (
+                <div className="bg-niloufer-ivory rounded-xl px-4 py-3">
+                  <p className="text-xs text-niloufer-walnut/50 mb-1 font-medium uppercase tracking-widest">
+                    You said
+                  </p>
+                  <p className="text-sm text-niloufer-charcoal leading-relaxed">
+                    &ldquo;{transcript}&rdquo;
+                  </p>
+                </div>
+              )}
+
+              {/* Assistant reply */}
+              {lastReply && (
+                <div className="bg-niloufer-burgundy/8 border border-niloufer-burgundy/20 rounded-xl px-4 py-3">
+                  <p className="text-xs text-niloufer-burgundy/60 mb-1 font-medium uppercase tracking-widest">
+                    Niloufer
+                  </p>
+                  <p className="text-sm text-niloufer-charcoal leading-relaxed">{lastReply}</p>
+                </div>
+              )}
+
+              {/* Empty state hint */}
+              {!transcript && !lastReply && (
+                <div className="text-center text-niloufer-walnut/50 py-6 space-y-2">
+                  <p className="text-3xl">🎤</p>
+                  <p className="text-sm">
+                    Try saying something like:
+                  </p>
+                  <ul className="text-xs space-y-1 mt-2">
+                    <li>&ldquo;Add two Irani Chai&rdquo;</li>
+                    <li>&ldquo;I want a Bun Maska&rdquo;</li>
+                    <li>&ldquo;What do you recommend?&rdquo;</li>
+                    <li>&ldquo;Remove the coffee&rdquo;</li>
+                    <li>&ldquo;I&apos;m done, checkout&rdquo;</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Footer – mic + text input */}
+            <div className="px-5 py-4 border-t border-niloufer-gold/15 space-y-3">
+              {/* Mic control */}
+              {speechAvailable && (
+                <div className="flex justify-center">
+                  <button
+                    onPointerDown={startListening}
+                    onPointerUp={micActive ? stopListening : undefined}
+                    onClick={micActive ? stopListening : startListening}
+                    disabled={micBusy}
+                    aria-label={micActive ? "Stop listening" : "Start listening"}
+                    className={[
+                      "flex items-center gap-2 px-6 py-2.5 rounded-full font-medium text-sm transition-all",
+                      micActive
+                        ? "bg-red-500 text-white shadow-md shadow-red-300/50"
+                        : micBusy
+                        ? "bg-niloufer-walnut/20 text-niloufer-walnut/40 cursor-not-allowed"
+                        : "bg-niloufer-burgundy text-white hover:bg-niloufer-maroon active:scale-95",
+                    ].join(" ")}
+                  >
+                    {micActive ? (
+                      <>
+                        <MicOff size={16} aria-hidden="true" />
+                        Tap to stop
+                      </>
+                    ) : (
+                      <>
+                        <Mic size={16} aria-hidden="true" />
+                        {micBusy ? "Processing…" : "Tap to speak"}
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {/* Text input fallback */}
+              <form onSubmit={handleTextSubmit} className="flex gap-2">
+                <input
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder={
+                    speechAvailable
+                      ? "Or type your order here…"
+                      : "Type your order (e.g. 2 Irani Chai)…"
+                  }
+                  aria-label="Type your order"
+                  disabled={micBusy}
+                  className="flex-1 text-sm px-4 py-2.5 rounded-full border border-niloufer-gold/30 bg-white text-niloufer-charcoal placeholder:text-niloufer-walnut/40 focus:outline-none focus:ring-2 focus:ring-niloufer-burgundy/30 disabled:opacity-40"
+                />
+                <button
+                  type="submit"
+                  disabled={!inputText.trim() || micBusy}
+                  className="px-4 py-2.5 rounded-full bg-niloufer-gold/80 text-niloufer-charcoal font-medium text-sm hover:bg-niloufer-gold active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Send
+                </button>
+              </form>
+
+              {/* Fallback notice */}
+              {fallbackUsed && (
+                <p className="text-center text-[11px] text-niloufer-walnut/40">
+                  Using local assistant · some complex requests may need rephrasing
+                </p>
+              )}
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
