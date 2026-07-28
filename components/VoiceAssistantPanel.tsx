@@ -251,8 +251,8 @@ export default function VoiceAssistantPanel({
       }
     };
 
-    recognition.onerror = (event: any) => {
-      console.error("Speech recognition error:", event.error);
+    recognition.onerror = (event: { error: string; message?: string }) => {
+      console.error("Speech recognition error:", event.error, event.message);
       setStatus("error");
       setTimeout(() => setStatus("idle"), 2000);
     };
