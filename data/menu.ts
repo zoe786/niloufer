@@ -78,6 +78,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Cutting Chai", hi: "कटिंग चाय", te: "కటింగ్ చాయ్" },
     description: {
       en: "Half a glass, full of soul – our brisk, strong cutting chai served in a classic glass tumbler, just as Hyderabad loves it.",
+      hi: "आधा गिलास, पूरा दिल – हमारी तेज़ और मज़बूत कटिंग चाय, क्लासिक गिलास टंबलर में परोसी गई, जैसा कि हैदराबाद पसंद करता है।",
+      te: "సగం గ్లాస్, పూర్తి ఆత్మ – మా వేగవంతమైన, బలమైన కటింగ్ చాయ్, క్లాసిక్ గ్లాస్ టంబ్లర్‌లో వడ్డించబడింది, హైదరాబాద్ ప్రేమించినట్లుగానే.",
     },
     price: 25,
     category: "chai",
@@ -96,6 +98,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Masala Chai", hi: "मसाला चाय", te: "మసాలా చాయ్" },
     description: {
       en: "A warming blend of ginger, black pepper, cloves, and cinnamon simmered into our classic chai. A hug in a cup.",
+      hi: "अदरक, काली मिर्च, लौंग और दालचीनी का गर्माहट भरा मिश्रण, हमारी क्लासिक चाय में उबाला गया। एक कप में आलिंगन।",
+      te: "అల్లం, నల్ల మిరియాలు, లవంగాలు మరియు దాల్చిన చెక్క యొక్క వెచ్చని మిశ్రమం, మా క్లాసిక్ చాయ్‌లో ఉడికించబడింది. ఒక కప్పులో హగ్.",
     },
     price: 50,
     category: "chai",
@@ -123,6 +127,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Adrak Chai (Ginger Tea)", hi: "अदरक चाय", te: "అల్లం చాయ్" },
     description: {
       en: "Punchy fresh ginger steeped into a full-bodied brew. Crisp, bright, and refreshingly bold.",
+      hi: "तेज़ ताजा अदरक का पूर्ण शरीर वाले किण्वन में घुला हुआ। ताज़ा, उज्ज्वल और साहसी।",
+      te: "పంచీ తాజా అల్లం పూర్తి శరీరంతో కూడిన బ్రూలో నానబెట్టబడింది. క్రిస్ప్, బ్రైట్ మరియు రిఫ్రెషింగ్గా ధైర్యసాహసాలు.",
     },
     price: 45,
     category: "chai",
@@ -143,6 +149,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Filter Coffee", hi: "फ़िल्टर कॉफ़ी", te: "ఫిల్టర్ కాఫీ" },
     description: {
       en: "South Indian drip-brewed decoction with creamy hot milk, poured to a frothy finish from a traditional brass tumbler-dabara set.",
+      hi: "दक्षिण भारतीय ड्रिप-ब्रूड काढ़ा मलाईदार गर्म दूध के साथ, पारंपरिक पीतल टंबलर-डबरा सेट से झागदार अंत तक परोसा गया।",
+      te: "దక్షిణ భారత డ్రిప్-బ్రూడ్ డికాక్షన్ క్రీమీ హాట్ మిల్క్‌తో, సాంప్రదాయ ఇత్తడి టంబ్లర్-దబరా సెట్ నుండి ఫ్రోతీ ఫినిష్‌కు పోయబడింది.",
     },
     price: 60,
     category: "coffee",
@@ -169,6 +177,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Cappuccino", hi: "कैपुचीनो", te: "కాపుచినో" },
     description: {
       en: "Classic espresso topped with velvety steamed milk foam. A continental touch in Hyderabad's most iconic café.",
+      hi: "क्लासिक एस्प्रेसो मखमली भाप वाले दूध के झाग के साथ। हैदराबाद के सबसे प्रतिष्ठित कैफे में महाद्वीपीय स्पर्श।",
+      te: "క్లాసిక్ ఎస్ప్రెసో వెల్వెటీ స్టీమ్డ్ మిల్క్ ఫోమ్‌తో అలంకరించబడింది. హైదరాబాద్‌లోని అత్యంత ప్రతిష్టాత్మక కేఫ్‌లో ఖండీయ స్పర్శ.",
     },
     price: 120,
     category: "coffee",
@@ -195,6 +205,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Cold Coffee", hi: "कोल्ड कॉफ़ी", te: "కోల్డ్ కాఫీ" },
     description: {
       en: "Chilled brewed coffee blended with milk and ice cream, crowned with a generous swirl of whipped cream.",
+      hi: "ठंडा बनाया गया कॉफ़ी दूध और आइसक्रीम के साथ मिलाया गया, व्हिप्ड क्रीम के उदार स्विर्ल के साथ ताज पहनाया गया।",
+      te: "చల్లని బ్రూడ్ కాఫీ పాలు మరియు ఐస్ క్రీమ్‌తో కలిపి, విప్డ్ క్రీమ్ యొక్క ఉదార స్విర్ల్‌తో అలంకరించబడింది.",
     },
     price: 130,
     category: "coffee",
@@ -223,6 +235,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Rose Milk", hi: "गुलाब दूध", te: "రోజ్ మిల్క్" },
     description: {
       en: "Chilled full-cream milk infused with house-made rose syrup and basil seeds. Floral, gentle, and classically Hyderabadi.",
+      hi: "ठंडा फुल-क्रीम दूध घर का बना गुलाब शरबत और तुलसी के बीज के साथ। पुष्प, कोमल और क्लासिक हैदराबादी।",
+      te: "చల్లని ఫుల్-క్రీమ్ పాలు ఇంటి తయారీ గులాబ్ సిరప్ మరియు తులసి విత్తనాలతో కూడినవి. పుష్ప, మృదువైన మరియు క్లాసిక్ హైదరాబాదీ.",
     },
     price: 80,
     category: "coolers",
@@ -241,6 +255,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Badam Milk", hi: "बादाम दूध", te: "బాదం పాలు" },
     description: {
       en: "Rich chilled milk blended with almond paste, saffron, and cardamom. Nourishing, festive, and delightfully fragrant.",
+      hi: "समृद्ध ठंडा दूध बादाम पेस्ट, केसर और इलायची के साथ मिलाया गया। पौष्टिक, उत्सवपूर्ण और सुगंधित।",
+      te: "సమృద్ధిగా చల్లని పాలు బాదం పేస్ట్, కేసరి మరియు యాలకులతో కలిపి. పోషకమైనది, ఉత్సవమైనది మరియు సువాసనభరితమైనది.",
     },
     price: 110,
     category: "coolers",
@@ -259,6 +275,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Hyderabadi Falooda", hi: "हैदराबादी फ़ालूदा", te: "హైదరాబాదీ ఫాలూదా" },
     description: {
       en: "Layers of rose milk, vermicelli, basil seeds, and vanilla ice cream. The classic street dessert-drink, elevated with Niloufer's touch.",
+      hi: "गुलाब दूध, सेवईं, तुलसी के बीज और वनीला आइसक्रीम की परतें। क्लासिक स्ट्रीट डेजर्ट-ड्रिंक, निलोफर के स्पर्श के साथ बढ़ाया गया।",
+      te: "గులాబ్ పాలు, వర్మిసిల్లీ, తులసి విత్తనాలు మరియు వనిల్లా ఐస్ క్రీమ్ పొరలు. క్లాసిక్ స్ట్రీట్ డెజర్ట్-డ్రింక్, నిలోఫర్ స్పర్శతో ఎలివేట్ చేయబడింది.",
     },
     price: 150,
     category: "coolers",
@@ -286,6 +304,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Nimbu Pani", hi: "नींबू पानी", te: "నిమ్మ నీళ్ళు" },
     description: {
       en: "A refreshing glass of fresh-squeezed lime, sugar, and a pinch of black salt. Simple, bright, and utterly refreshing.",
+      hi: "ताज़ा निचोड़ा हुआ नींबू, चीनी और एक चुटकी काला नमक का ताज़ा गिलास। सरल, उज्ज्वल और पूरी तरह से ताज़ा।",
+      te: "తాజాగా పిండిన నిమ్మకాయ, చక్కెర మరియు ఒక చిటికెడు నల్ల ఉప్పు యొక్క రిఫ్రెషింగ్ గ్లాస్. సరళమైన, ప్రకాశవంతమైన మరియు పూర్తిగా రిఫ్రెషింగ్.",
     },
     price: 55,
     category: "coolers",
