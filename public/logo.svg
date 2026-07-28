@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <!-- Background / brand mark area -->
+
+  <!-- Lotus / blue water lily motif (simplified) -->
+  <g transform="translate(10, 5)">
+    <!-- Petals -->
+    <ellipse cx="22" cy="28" rx="7" ry="16" fill="#4A6FA5" opacity="0.18" transform="rotate(-30 22 28)"/>
+    <ellipse cx="22" cy="28" rx="7" ry="16" fill="#4A6FA5" opacity="0.18" transform="rotate(30 22 28)"/>
+    <ellipse cx="22" cy="28" rx="7" ry="16" fill="#4A6FA5" opacity="0.22" transform="rotate(0 22 28)"/>
+    <ellipse cx="22" cy="28" rx="6" ry="13" fill="#4A6FA5" opacity="0.28" transform="rotate(-60 22 28)"/>
+    <ellipse cx="22" cy="28" rx="6" ry="13" fill="#4A6FA5" opacity="0.28" transform="rotate(60 22 28)"/>
+    <!-- Centre -->
+    <circle cx="22" cy="28" r="5" fill="#7C1D33" opacity="0.85"/>
+    <circle cx="22" cy="28" r="3" fill="#B8860B" opacity="0.9"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="52" y="26" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="700" fill="#7C1D33" letter-spacing="0.5">Cafe Niloufer</text>
+
+  <!-- Gold rule -->
+  <line x1="52" y1="31" x2="192" y2="31" stroke="#B8860B" stroke-width="0.8" opacity="0.6"/>
+
+  <!-- Tagline -->
+  <text x="52" y="44" font-family="Georgia, 'Times New Roman', serif" font-size="9" fill="#6B3A2A" letter-spacing="1.5" opacity="0.75">BANJARA HILLS · EST. 1978</text>
+</svg>
