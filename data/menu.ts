@@ -333,6 +333,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Mango Lassi", hi: "मैंगो लस्सी", te: "మామిడి లస్సీ" },
     description: {
       en: "Thick, tangy yoghurt blended with Alphonso mango pulp and a touch of cardamom. Summer in a tall glass.",
+      hi: "गाढ़ा, खट्टा दही जो अल्फांसो आम के गूदे और इलायची के साथ मिलाया गया। एक लंबे गिलास में गर्मी।",
+      te: "మందపాటి, పుల్లని పెరుగు అల్ఫాన్సో మామిడి గుజ్జు మరియు యాలకులతో కలిపి. ఎత్తైన గ్లాసులో వేసవి.",
     },
     price: 120,
     category: "coolers",
@@ -353,6 +355,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Veg Puff", hi: "वेज पफ", te: "వెజ్ పఫ్" },
     description: {
       en: "Golden, flaky pastry shell stuffed with a spiced potato and pea filling, baked until perfectly puffed.",
+      hi: "सुनहरा, परतदार पेस्ट्री खोल जो मसालेदार आलू और मटर की भरवां सामग्री से भरा होता है, जिसे पूरी तरह फूला हुआ बेक किया जाता है।",
+      te: "బంగారు రంగు, పొరలు పొరలుగా ఉండే పెస్ట్రీ షెల్ మసాలా బంగాళదుంప మరియు బఠానీ నింపితో నింపబడి, సరిగ్గా వేయించబడింది.",
     },
     price: 30,
     category: "snacks",
@@ -371,6 +375,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Egg Puff", hi: "अंडा पफ", te: "గుడ్డు పఫ్" },
     description: {
       en: "A perfectly hard-boiled egg nestled in spiced onion masala, enveloped in buttery puff pastry. A beloved Hyderabadi street classic.",
+      hi: "एक पूरी तरह उबला हुआ अंडा मसालेदार प्याज मसाले में घिरा हुआ, मक्खनयुक्त पफ पेस्ट्री में लिपटा हुआ। एक प्रिय हैदराबादी स्ट्रीट क्लासिक।",
+      te: "సరిగ్గా ఉడికించిన గుడ్డు మసాలా ఉల్లిపాయ మసాలాలో చుట్టుముట్టబడి, వెన్న పఫ్ పెస్ట్రీలో కప్పబడింది. ఒక ప్రసిద్ధ హైదరాబాదీ వీధి క్లాసిక్.",
     },
     price: 35,
     category: "snacks",
@@ -389,6 +395,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Samosa", hi: "समोसा", te: "సమోసా" },
     description: {
       en: "Crisp triangular pastry with a fragrant potato-pea filling, served with mint chutney and tamarind dip.",
+      hi: "खुशबूदार आलू-मटर की भरवां सामग्री के साथ क्रिस्पी त्रिकोणीय पेस्ट्री, पुदीना चटनी और इमली की चटनी के साथ परोसी गई।",
+      te: "సువాసన బంగాళదుంప-బఠానీ నింపితో క్రిస్ప్ త్రిభుజాకార పెస్ట్రీ, పుదీనా చట్నీ మరియు చింతపండు డిప్‌తో వడ్డించబడింది.",
     },
     price: 30,
     category: "snacks",
@@ -407,6 +415,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Keema Pav", hi: "कीमा पाव", te: "కీమా పావ్" },
     description: {
       en: "Spiced minced lamb sautéed with caramelised onions, green chilli, and fragrant spices, served with buttery pav buns.",
+      hi: "मसालेदार कीमा भुना हुआ प्याज, हरी मिर्च और सुगंधित मसालों के साथ, मक्खनयुक्त पाव बन्स के साथ परोसा गया।",
+      te: "మసాలా కోత గొర్రె మాంసం కరిగిన ఉల్లిపాయలు, పచ్చి మిర్చి మరియు సువాసన మసాలాలతో వేయించబడి, వెన్న పావ్ బన్స్‌తో వడ్డించబడింది.",
     },
     price: 120,
     category: "snacks",
@@ -434,6 +444,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Bread Omelette", hi: "ब्रेड ऑमलेट", te: "బ్రెడ్ ఆమ్లెట్" },
     description: {
       en: "Fluffy masala omelette folded with onions, tomatoes, and green chilli, tucked into toasted bread. A hearty Niloufer staple.",
+      hi: "फूलफूला मसाला ऑमलेट प्याज, टमाटर और हरी मिर्च के साथ, टोस्टेड ब्रेड में लिपटा हुआ। एक दिल को संतोष देने वाला निलोफर मुख्य भोजन।",
+      te: "ఉల్లిపాయలు, టమాటాలు మరియు పచ్చి మిర్చితో కూడిన ఫ్లఫీ మసాలా ఆమ్లెట్, టోస్ట్ చేసిన బ్రెడ్‌లో చుట్టబడింది. ఒక హృదయపూర్వకమైన నిలోఫర్ ప్రధాన ఆహారం.",
     },
     price: 70,
     category: "snacks",
@@ -474,6 +486,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Khari", hi: "खारी", te: "ఖారీ" },
     description: {
       en: "Delicate, papery-thin puff pastry wafers – crisp, flaky, and impossibly light. The perfect counterpoint to a cup of Irani chai.",
+      hi: "नाजुक, कागज जैसी पतली पफ पेस्ट्री वेफर्स – क्रिस्पी, परतदार और अविश्वसनीय रूप से हल्की। ईरानी चाय के कप के लिए एकदम सही पूरक।",
+      te: "సున్నితమైన, కాగితం లాగా సన్నని పఫ్ పెస్ట్రీ వేఫర్స్ – క్రిస్ప్, పొరలు పొరలుగా మరియు అసాధ్యమైనంత తేలికపాటివి. ఇరానీ చాయ్ కప్పుకు సరిపోయే జత.",
     },
     price: 15,
     category: "bites",
@@ -492,6 +506,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Fruit Biscuit", hi: "फ्रूट बिस्कुट", te: "ఫ్రూట్ బిస్కెట్" },
     description: {
       en: "Studded with candied fruit peel and a hint of citrus, these golden biscuits carry the warmth of an old Irani bakery.",
+      hi: "कैंडीड फ्रूट पील और खट्टे इशारे के साथ जड़े हुए, ये सुनहरे बिस्कुट पुरानी ईरानी बेकरी की गर्माहट को लिए हुए हैं।",
+      te: "కండిడ్ ఫ్రూట్ పీల్ మరియు నిమ్మ రుచితో కూడిన ఈ బంగారు బిస్కెట్లు పాత ఇరానీ బేకరీ వెచ్చదనాన్ని కలిగి ఉంటాయి.",
     },
     price: 20,
     category: "bites",
@@ -510,6 +526,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Dil Khush", hi: "दिल खुश", te: "దిల్ ఖుష్" },
     description: {
       en: "Its name means 'happy heart' – a beloved sweet bun studded with tutti-frutti, soft and fragrant. Pure joy with every bite.",
+      hi: "इसका नाम है 'खुश दिल' – तुत्ती-फ्रूटी से जड़ा हुआ एक प्रिय मीठा बन, नरम और सुगंधित। हर कौर के साथ शुद्ध आनंद।",
+      te: "దీని పేరు అర్థం 'ఖుష్ దిల్' – తుత్తీ-ఫ్రూటీతో కూడిన ఒక ప్రసిద్ధ స్వీట్ బన్, మృదువు మరియు సువాసనభరితం. ప్రతి కడపటి కాటుతో శుద్ధ ఆనందం.",
     },
     price: 30,
     category: "bites",
@@ -528,6 +546,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Nankhatai", hi: "नानखटाई", te: "నాన్ ఖటాయ్" },
     description: {
       en: "Traditional Indian shortbread cookies, melt-in-mouth soft, scented with cardamom and ghee. A timeless Irani bakery treasure.",
+      hi: "पारंपरिक भारतीय शॉर्टब्रेड कुकीज, मुंह में घुलने वाली नरम, इलायची और घी की सुगंध के साथ। एक कालातीत ईरानी बेकरी खजाना।",
+      te: "సాంప్రదాయ భారతీయ షార్ట్‌బ్రెడ్ కుకీలు, నోటిలో కరిగిపోయేంత మృదువు, యాలకులు మరియు నెయ్యి సువాసనతో. ఒక కాలాతీతమైన ఇరానీ బేకరీ నిధి.",
     },
     price: 20,
     category: "bites",
@@ -548,6 +568,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Veg Cheese Sandwich", hi: "वेज चीज़ सैंडविच", te: "వెజ్ చీజ్ శాండ్‌విచ్" },
     description: {
       en: "Soft white bread layered with fresh vegetables, a generous spread of cream cheese, and a light seasoning. Comforting and satisfying.",
+      hi: "नरम सफेद ब्रेड ताजी सब्जियों, क्रिम चीज़ की उदार मात्रा और हल्के मसालों के साथ। आरामदायक और संतोषजनक।",
+      te: "మృదువైన తెల్ల బ్రెడ్ తాజా కూరగాయలు, క్రీమ్ చీజ్ యొక్క ఉదార స్ప్రెడ్ మరియు తేలికపాటి సీజనింగ్‌తో కప్పబడి ఉంటుంది. ఓదార్పు మరియు తృప్తికరం.",
     },
     price: 100,
     category: "sandwiches",
@@ -575,6 +597,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Chicken Cheese Sandwich", hi: "चिकन चीज़ सैंडविच", te: "చికెన్ చీజ్ శాండ్‌విచ్" },
     description: {
       en: "Shredded tender chicken tossed in a mild spiced mayo, layered with cheddar cheese and crunchy lettuce on soft white bread.",
+      hi: "कसा हुआ मुलायम चिकन हल्के मसालेदार मेयोनेज़ में मिलाया गया, चेडर चीज़ और क्रंची लेट्यूस के साथ नरम सफेद ब्रेड पर।",
+      te: "చిన్న ముక్కలు చేసిన మృదువైన చికెన్ తేలికపాటి మసాలా మయోనైస్‌లో కలిపి, చెడార్ చీజ్ మరియు క్రంచీ లెట్యూస్‌తో మృదువైన తెల్ల బ్రెడ్‌పై వడ్డించబడింది.",
     },
     price: 150,
     category: "sandwiches",
@@ -602,6 +626,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Egg Salad Sandwich", hi: "एग सलाद सैंडविच", te: "గుడ్డు సలాడ్ శాండ్‌విచ్" },
     description: {
       en: "Classic egg salad – chopped hard-boiled eggs bound with mayo, a touch of mustard and herbs, on fresh soft bread.",
+      hi: "क्लासिक एग सलाद – मेयोनेज़ के साथ बांधे गए कटे हुए उबले अंडे, सरसों और जड़ी-बूटियों के स्पर्श के साथ, ताजे नरम ब्रेड पर।",
+      te: "క్లాసిక్ గుడ్డు సలాడ్ – మయోనైస్‌తో కలిపిన తరిగిన ఉడికించిన గుడ్లు, ఆవాలు మరియు హెర్బ్స్ యొక్క స్పర్శతో, తాజా మృదువైన బ్రెడ్‌పై వడ్డించబడింది.",
     },
     price: 100,
     category: "sandwiches",
@@ -620,6 +646,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Club Sandwich", hi: "क्लब सैंडविच", te: "క్లబ్ శాండ్‌విచ్" },
     description: {
       en: "A triple-decker tower of grilled chicken, fried egg, cheese, tomato, and lettuce. The lounge classic. Served with kettle chips.",
+      hi: "ग्रिल्ड चिकन, तला हुआ अंडा, चीज़, टमाटर और लेट्यूस का तीन-मंजिला टावर। लाउंज क्लासिक। केतली चिप्स के साथ परोसा गया।",
+      te: "గ్రిల్ చేసిన చికెన్, వేయించిన గుడ్డు, చీజ్, టమాటా మరియు లెట్యూస్‌తో కూడిన మూడు-అంతస్తుల టవర్. లౌంజ్ క్లాసిక్. కెటిల్ చిప్స్‌తో వడ్డించబడింది.",
     },
     price: 200,
     category: "sandwiches",
@@ -669,6 +697,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Maska Bun", hi: "मस्का बन", te: "మస్కా బన్" },
     description: {
       en: "Soft, enriched bun soaked in ghee – dense, buttery, and absolutely irresistible. Best enjoyed warm with chai.",
+      hi: "घी में भीगा हुआ नरम, समृद्ध बन – घना, मक्खनयुक्त और बिल्कुल प्रतिरोधी। चाय के साथ गर्म सबसे अच्छा।",
+      te: "నెయ్యిలో నానబెట్టిన మృదువైన, సంపన్నమైన బన్ – సాంద్రత కలిగిన, వెన్నలాంటిది మరియు పూర్తిగా నిరోధించలేనిది. చాయ్‌తో వేడిగా ఆస్వాదించడానికి ఉత్తమం.",
     },
     price: 35,
     category: "bakery",
@@ -687,6 +717,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Malai Bun", hi: "मलाई बन", te: "మలాయ్ బన్" },
     description: {
       en: "A feather-soft bun filled with thick, sweet malai (clotted cream). Delicate, luxurious, and uniquely Niloufer.",
+      hi: "मखमली, मीठी मलाई से भरा हुआ एक पंखुड़ी-नरम बन। नाजुक, विलासितापूर्ण और अनोखा निलोफर।",
+      te: "మందపాటి, తీపి మలాయ్‌తో నింపబడిన ఈకెలాంటి మృదువైన బన్. సున్నితమైనది, విలాసవంతమైనది మరియు ప్రత్యేకమైన నిలోఫర్.",
     },
     price: 45,
     category: "bakery",
@@ -705,6 +737,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Plum Cake", hi: "प्लम केक", te: "ప్లమ్ కేక్" },
     description: {
       en: "A rich, dark fruit cake dense with raisins, citrus peel, and warm spices. Heritage Irani bakery at its finest.",
+      hi: "किशमिश, खट्टे फल के छिलके और गर्म मसालों से भरा एक समृद्ध, गहरा फ्रूट केक। विरासत ईरानी बेकरी अपनी सर्वोत्तम अवस्था में।",
+      te: "ఎండుద్రాక్ష, నిమ్మ తొక్క మరియు వెచ్చని మసాలాలతో నిండిన సమృద్ధిగా, చీకటి ఫ్రూట్ కేక్. వారసత్వ ఇరానీ బేకరీ తన అత్యుత్తమ స్థితిలో.",
     },
     price: 60,
     category: "bakery",
@@ -723,6 +757,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Rusk", hi: "रस्क", te: "రస్క్" },
     description: {
       en: "Twice-baked until crispy and golden, these tea rusks are the ideal companion for your morning chai – crunch, dunk, bliss.",
+      hi: "क्रिस्पी और सुनहरा होने तक दो बार बेक किया गया, ये चाय रस्क आपकी सुबह की चाय के लिए आदर्श साथी हैं – क्रंच, डंक, ब्लिस।",
+      te: "క్రిస్ప్ మరియు బంగారు రంగులోకి రెండు సార్లు వేయించబడిన ఈ టీ రస్కులు మీ ఉదయం చాయ్‌కు ఆదర్శవంతమైన జత – క్రంచ్, డంక్, బ్లిస్.",
     },
     price: 15,
     category: "bakery",
@@ -741,6 +777,8 @@ export const menuItems: MenuItem[] = [
     name: { en: "Croissant", hi: "क्रोइसैंट", te: "క్రాసాంట్" },
     description: {
       en: "Buttery, shatteringly crisp French pastry, freshly baked each morning. Served warm with a side of jam.",
+      hi: "मक्खनयुक्त, अत्यंत क्रिस्पी फ्रेंच पेस्ट्री, प्रत्येक सुबह ताजा बेक किया गया। जैम के साथ गर्म परोसा गया।",
+      te: "వెన్నలాంటి, అత్యంత క్రిస్ప్ ఫ్రెంచ్ పెస్ట్రీ, ప్రతి ఉదయం తాజాగా వేయించబడింది. జామ్‌తో పాటు వేడిగా వడ్డించబడింది.",
     },
     price: 80,
     category: "bakery",
