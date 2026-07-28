@@ -82,9 +82,25 @@ function speak(text: string): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
+  
+  // Try to find a natural-sounding English voice
+  const voices = window.speechSynthesis.getVoices();
+  const preferredVoice = voices.find(voice => 
+    voice.name.includes('Google') || 
+    voice.name.includes('Natural') ||
+    voice.name.includes('Premium') ||
+    (voice.lang.startsWith('en') && voice.name.includes('Female')) ||
+    (voice.lang.startsWith('en') && voice.name.includes('India'))
+  ) || voices.find(voice => voice.lang.startsWith('en')) || null;
+  
+  if (preferredVoice) {
+    utterance.voice = preferredVoice;
+  }
+  
   utterance.lang = "en-IN";
-  utterance.rate = 0.95;
-  utterance.pitch = 1.05;
+  utterance.rate = 0.9;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
   window.speechSynthesis.speak(utterance);
 }
 
@@ -195,7 +211,11 @@ export default function VoiceAssistantPanel({
 
   const startListening = useCallback(() => {
     const SR = getSpeechRecognition();
-    if (!SR) return;
+    if (!SR) {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 2000);
+      return;
+    }
 
     if (recognitionRef.current) {
       recognitionRef.current.abort();
@@ -208,7 +228,10 @@ export default function VoiceAssistantPanel({
     recognition.interimResults = true;
     recognitionRef.current = recognition;
 
-    recognition.onstart = () => setStatus("listening");
+    recognition.onstart = () => {
+      setTranscript("");
+      setStatus("listening");
+    };
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       let interim = "";
@@ -228,7 +251,8 @@ export default function VoiceAssistantPanel({
       }
     };
 
-    recognition.onerror = () => {
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
       setStatus("error");
       setTimeout(() => setStatus("idle"), 2000);
     };
@@ -237,7 +261,13 @@ export default function VoiceAssistantPanel({
       if (status === "listening") setStatus("idle");
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (err) {
+      console.error("Failed to start recognition:", err);
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 2000);
+    }
   }, [language, sendTranscript, status]);
 
   const stopListening = useCallback(() => {
