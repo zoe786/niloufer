@@ -2,21 +2,17 @@
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * Cafe Niloufer – Voice Assistant Panel
+ * Cafe Niloufer – Voice Assistant Panel (API-Powered)
  *
  * Provides seamless voice ordering experience with:
- *  - Tap-to-talk or press-to-speak interaction
+ *  - Advanced speech-to-text via Google Cloud API
+ *  - Natural text-to-speech voices via Google Cloud TTS
+ *  - MediaRecorder for high-quality audio capture
  *  - Live listening state / status indicator
  *  - Transcript display
  *  - Assistant responses in warm Niloufer tone
  *  - Add-to-cart / remove / checkout actions driven by parsed assistant results
- *  - Text input fallback if browser speech APIs are unavailable
- *  - Gentle "local assistant" notice when DeepSeek is not reachable
- *
- * Architecture:
- *  - Speech-to-text: Web Speech API (SpeechRecognition) where available
- *  - Parsing/reasoning: POST /api/assistant (DeepSeek-backed, falls back locally)
- *  - Text-to-speech: Web Speech API (SpeechSynthesis) where available
+ *  - Fallback to browser APIs if cloud services unavailable
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -43,7 +39,61 @@ type PanelStatus =
   | "speaking"
   | "error";
 
-// ─── Browser speech helpers ───────────────────────────────────────────────────
+// ─── Browser speech helpers (fallback) ────────────────────────────────────────
+
+// MediaRecorder for API-powered speech capture
+let mediaRecorder: MediaRecorder | null = null;
+let audioChunks: Blob[] = [];
+
+async function startRecording(): Promise<boolean> {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    return false;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunks.push(event.data);
+      }
+    };
+
+    mediaRecorder.start(1000); // Collect data every second
+    return true;
+  } catch (error) {
+    console.error("Failed to access microphone:", error);
+    return false;
+  }
+}
+
+function stopRecording(): Promise<Blob | null> {
+  return new Promise((resolve) => {
+    if (!mediaRecorder || mediaRecorder.state === "inactive") {
+      resolve(null);
+      return;
+    }
+
+    mediaRecorder.onstop = () => {
+      const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+      resolve(audioBlob);
+      // Stop all tracks to release microphone
+      mediaRecorder?.stream.getTracks().forEach(track => track.stop());
+    };
+
+    mediaRecorder.stop();
+  });
+}
+
+async function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
+}
 
 // SpeechRecognition isn't always in TypeScript's dom lib – declare a minimal interface
 interface SpeechRecognitionResult {
@@ -78,7 +128,33 @@ function getSpeechRecognition(): SpeechRecognitionConstructor | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-function speak(text: string): void {
+// API-powered text-to-speech
+async function speakWithAPI(text: string, language: string): Promise<void> {
+  try {
+    const res = await fetch("/api/text-to-speech", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, language }),
+    });
+    
+    if (!res.ok) throw new Error("TTS API error");
+    
+    const data = await res.json();
+    
+    if (data.audioContent) {
+      const audio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
+      await audio.play();
+    } else {
+      // Fallback to browser TTS
+      speakBrowser(text);
+    }
+  } catch (error) {
+    console.error("TTS failed, using browser fallback:", error);
+    speakBrowser(text);
+  }
+}
+
+function speakBrowser(text: string): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
@@ -149,11 +225,11 @@ export default function VoiceAssistantPanel({
   // ── Process assistant response ────────────────────────────────────────────
 
   const processResponse = useCallback(
-    (res: AssistantResponse) => {
+    async (res: AssistantResponse) => {
       setLastReply(res.reply);
       setFallbackUsed(res.fallbackUsed);
       setStatus("speaking");
-      speak(res.reply);
+      await speakWithAPI(res.reply, language);
 
       switch (res.intent) {
         case "add_item":
@@ -177,7 +253,7 @@ export default function VoiceAssistantPanel({
 
       setTimeout(() => setStatus("idle"), 3000);
     },
-    [onAddItem, onRemoveItemByName, onCheckout, onClearCart]
+    [onAddItem, onRemoveItemByName, onCheckout, onClearCart, language]
   );
 
   // ── Send transcript to API ────────────────────────────────────────────────
@@ -207,75 +283,121 @@ export default function VoiceAssistantPanel({
     [language, processResponse]
   );
 
-  // ── Mic press-to-speak ────────────────────────────────────────────────────
+  // ── API-powered voice recording ────────────────────────────────────────────
 
-  const startListening = useCallback(() => {
-    const SR = getSpeechRecognition();
-    if (!SR) {
-      setStatus("error");
-      setTimeout(() => setStatus("idle"), 2000);
+  const startListening = useCallback(async () => {
+    // Try MediaRecorder API first for high-quality audio
+    const canRecord = await startRecording();
+    
+    if (!canRecord) {
+      // Fallback to Web Speech API
+      const SR = getSpeechRecognition();
+      if (!SR) {
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 2000);
+        return;
+      }
+
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+
+      const recognition = new SR();
+      recognition.lang =
+        language === "hi" ? "hi-IN" : language === "te" ? "te-IN" : "en-IN";
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognitionRef.current = recognition;
+
+      recognition.onstart = () => {
+        setTranscript("");
+        setStatus("listening");
+      };
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let interim = "";
+        let final = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const r = event.results[i];
+          if (r.isFinal) {
+            final += r[0].transcript;
+          } else {
+            interim += r[0].transcript;
+          }
+        }
+        setTranscript(final || interim);
+        if (final) {
+          recognition.stop();
+          sendTranscript(final);
+        }
+      };
+
+      recognition.onerror = () => {
+        console.error("Speech recognition error");
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 2000);
+      };
+
+      recognition.onend = () => {
+        if (status === "listening") setStatus("idle");
+      };
+
+      try {
+        recognition.start();
+      } catch (err) {
+        console.error("Failed to start recognition:", err);
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 2000);
+      }
       return;
     }
 
-    if (recognitionRef.current) {
-      recognitionRef.current.abort();
-    }
-
-    const recognition = new SR();
-    recognition.lang =
-      language === "hi" ? "hi-IN" : language === "te" ? "te-IN" : "en-IN";
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognitionRef.current = recognition;
-
-    recognition.onstart = () => {
-      setTranscript("");
-      setStatus("listening");
-    };
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let interim = "";
-      let final = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const r = event.results[i];
-        if (r.isFinal) {
-          final += r[0].transcript;
-        } else {
-          interim += r[0].transcript;
-        }
-      }
-      setTranscript(final || interim);
-      if (final) {
-        recognition.stop();
-        sendTranscript(final);
-      }
-    };
-
-    recognition.onerror = () => {
-      console.error("Speech recognition error");
-      setStatus("error");
-      setTimeout(() => setStatus("idle"), 2000);
-    };
-
-    recognition.onend = () => {
-      if (status === "listening") setStatus("idle");
-    };
-
-    try {
-      recognition.start();
-    } catch (err) {
-      console.error("Failed to start recognition:", err);
-      setStatus("error");
-      setTimeout(() => setStatus("idle"), 2000);
-    }
+    // MediaRecorder started successfully
+    setStatus("listening");
+    setTranscript("");
   }, [language, sendTranscript, status]);
 
-  const stopListening = useCallback(() => {
+  const stopListening = useCallback(async () => {
+    // Stop MediaRecorder if active
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      const audioBlob = await stopRecording();
+      
+      if (audioBlob) {
+        setStatus("processing");
+        const base64Audio = await blobToBase64(audioBlob);
+        
+        try {
+          const res = await fetch("/api/speech-to-text", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ audio: base64Audio, language }),
+          });
+          
+          if (!res.ok) throw new Error("STT API error");
+          
+          const data = await res.json();
+          
+          if (data.transcript) {
+            sendTranscript(data.transcript);
+          } else {
+            setStatus("error");
+            setTimeout(() => setStatus("idle"), 2000);
+          }
+        } catch (error) {
+          console.error("Speech-to-text failed:", error);
+          setStatus("error");
+          setTimeout(() => setStatus("idle"), 2000);
+        }
+      }
+      return;
+    }
+    
+    // Fallback: stop Web Speech API recognition
     if (recognitionRef.current) {
       recognitionRef.current.stop();
     }
     setStatus("idle");
-  }, []);
+  }, [language, sendTranscript]);
 
   // ── Text input submit ─────────────────────────────────────────────────────
 
